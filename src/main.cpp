@@ -46,6 +46,7 @@ int main(int /*argc*/, char* /*argv*/[])
 
 	std::string baseUrl = envServerUrl;
 	baseUrl.append("/rooms/").append(envRoomId);
+	// baseUrl.append("/?roomId=").append(envRoomId);
 
 	bool enableAudio = true;
 
@@ -81,28 +82,34 @@ int main(int /*argc*/, char* /*argv*/[])
 
 	std::cout << "[INFO] welcome to mediasoup broadcaster app!\n" << std::endl;
 
-	std::cout << "[INFO] verifying that room '" << envRoomId << "' exists..." << std::endl;
-	auto r = cpr::GetAsync(cpr::Url{ baseUrl }, cpr::VerifySsl{ verifySsl }).get();
+	std::cout << "Url Room: " << baseUrl << std::endl;
+	std::string createRoomUrl = envServerUrl;
+	createRoomUrl.append("/createRoom/").append(envRoomId);
+  std::cout << "Checking create Room: " << createRoomUrl << std::endl;
 
-	if (r.status_code != 200)
+	auto checkRoom = cpr::Post(cpr::Url{ createRoomUrl }, cpr::VerifySsl{ verifySsl });
+
+	if (checkRoom.status_code != 200)
 	{
-		std::cerr << "[ERROR] unable to retrieve room info"
-		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
-
-		return 1;
+		std::cout << "[INFO] Create RoomFail" << checkRoom.text << std::endl;
+    return 1;
 	}
-	else
-	{
-		std::cout << "[INFO] found room" << envRoomId << std::endl;
-	}
-
-	auto response = nlohmann::json::parse(r.text);
-
-	Broadcaster broadcaster;
-
-	broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
-
-	std::cout << "[INFO] press Ctrl+C or Cmd+C to leave..." << std::endl;
+  std::cout << "[INFO] verifying that room '" << envRoomId << "' exists..." << std::endl;
+		auto r = cpr::GetAsync(cpr::Url{ baseUrl }, cpr::VerifySsl{ verifySsl }).get();
+		if (r.status_code != 200)
+		{
+			std::cerr << "[ERROR] unable to retrieve room info"
+			          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
+			return 1;
+		}
+		else
+		{
+			std::cout << "[INFO] found room" << envRoomId << std::endl;
+		}
+		auto response = nlohmann::json::parse(r.text);
+		Broadcaster broadcaster;
+		broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
+	  std::cout << "[INFO] press Ctrl+C or Cmd+C to leave..." << std::endl;
 
 	while (true)
 	{
