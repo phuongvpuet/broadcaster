@@ -14,7 +14,8 @@ class Broadcaster : public
                     mediasoupclient::RecvTransport::Listener,
                     mediasoupclient::Producer::Listener,
                     mediasoupclient::DataProducer::Listener,
-                    mediasoupclient::DataConsumer::Listener
+                    mediasoupclient::DataConsumer::Listener,
+                    mediasoupclient::Consumer::Listener
 {
 public:
 	struct TimerKiller
@@ -61,6 +62,7 @@ public:
 	/* Virtual methods inherited from Producer::Listener. */
 public:
 	void OnTransportClose(mediasoupclient::Producer* producer) override;
+  void OnTransportClose(mediasoupclient::Consumer* consumer) override;
 
 	/* Virtual methods inherited from DataConsumer::Listener */
 public:
@@ -105,6 +107,9 @@ private:
 	mediasoupclient::RecvTransport* recvTransport{ nullptr };
 	mediasoupclient::DataProducer* dataProducer{ nullptr };
 	mediasoupclient::DataConsumer* dataConsumer{ nullptr };
+  mediasoupclient::Producer* audioProducer{ nullptr };
+  mediasoupclient::Producer* videoProducer{ nullptr };
+
 
 	std::string id = std::to_string(rtc::CreateRandomId());
 	std::string baseUrl;
@@ -119,6 +124,8 @@ private:
 	void CreateSendTransport(bool enableAudio, bool useSimulcast);
 	void CreateRecvTransport();
 	void CreateDataConsumer();
+	void CreateMediaConsumer(mediasoupclient::Consumer::Listener* listener, mediasoupclient::Producer* producer);
+
 };
 
 #endif // STOKER_HPP

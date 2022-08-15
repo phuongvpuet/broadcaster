@@ -107,6 +107,7 @@ int main(int /*argc*/, char* /*argv*/[])
 			std::cout << "[INFO] found room" << envRoomId << std::endl;
 		}
 		auto response = nlohmann::json::parse(r.text);
+    // std::cout << "routerRtpCapabilities: " << r.text << std::endl;
 		Broadcaster broadcaster;
 		broadcaster.Start(baseUrl, enableAudio, useSimulcast, response, verifySsl);
 	  std::cout << "[INFO] press Ctrl+C or Cmd+C to leave..." << std::endl;

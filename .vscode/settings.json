@@ -87,6 +87,8 @@
         "valarray": "cpp",
         "variant": "cpp",
         "vector": "cpp",
-        "__bits": "cpp"
+        "__bits": "cpp",
+        "cfenv": "cpp",
+        "typeindex": "cpp"
     }
 }
