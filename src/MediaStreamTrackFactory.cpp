@@ -105,3 +105,24 @@ rtc::scoped_refptr<webrtc::VideoTrackInterface> createSquaresVideoTrack(const st
 	std::cout << "[INFO] creating video track" << std::endl;
 	return factory->CreateVideoTrack(rtc::CreateRandomUuid(), videoTrackSource);
 }
+
+rtc::scoped_refptr<webrtc::VideoTrackInterface> createSquaresVideoTrackFromSource(webrtc::VideoTrackSourceInterface* videoSource)
+{
+	if (!factory) createFactory();
+	std::cout << "[INFO] creating video track" << std::endl;
+	return factory->CreateVideoTrack(rtc::CreateRandomUuid(), videoSource);
+}
+// rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> getFactory()
+// {
+// 	if (!factory) createFactory();
+// 	return factory;
+// }
+// webrtc::FrameGeneratorCapturerVideoTrackSource createMainVideoSource(const std::string& /*label*/)
+// {
+// 	if (!factory) createFactory();
+// 	std::cout << "[INFO] getting frame generator" << std::endl;
+// 	auto* videoTrackSource = new rtc::RefCountedObject<webrtc::FrameGeneratorCapturerVideoTrackSource>(
+// 	  webrtc::FrameGeneratorCapturerVideoTrackSource::Config(), webrtc::Clock::GetRealTimeClock(), false);
+// 	videoTrackSource->Start();
+// 	return videoTrackSource;
+// }

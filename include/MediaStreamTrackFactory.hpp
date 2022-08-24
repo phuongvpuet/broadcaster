@@ -8,5 +8,5 @@ rtc::scoped_refptr<webrtc::AudioTrackInterface> createAudioTrack(const std::stri
 rtc::scoped_refptr<webrtc::VideoTrackInterface> createVideoTrack(const std::string& label);
 
 rtc::scoped_refptr<webrtc::VideoTrackInterface> createSquaresVideoTrack(const std::string& label);
-
+rtc::scoped_refptr<webrtc::VideoTrackInterface> createSquaresVideoTrackFromSource(webrtc::VideoTrackSourceInterface* videoSource);
 #endif

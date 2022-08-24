@@ -19,6 +19,7 @@
 #include "api/test/create_frame_generator.h"
 #include "pc/video_track_source.h"
 #include "test/frame_generator_capturer.h"
+#include <iostream>
 
 namespace webrtc {
 
@@ -29,15 +30,24 @@ namespace webrtc {
 class FrameGeneratorCapturerVideoTrackSource : public VideoTrackSource {
  public:
   static const int kDefaultFramesPerSecond = 30;
-  static const int kDefaultWidth = 640;
-  static const int kDefaultHeight = 480;
-  static const int kNumSquaresGenerated = 50;
+  static const int kDefaultWidth = 128;
+  static const int kDefaultHeight = 128;
+  static const int kNumSquaresGenerated = 1;
 
   struct Config {
     int frames_per_second = kDefaultFramesPerSecond;
     int width = kDefaultWidth;
     int height = kDefaultHeight;
-    int num_squares_generated = 50;
+    int num_squares_generated = 1;
+    public:
+      void PrintString()
+      {
+        std::cout << "Video Src Config: " << std::endl;
+        std::cout << "FPS: " << frames_per_second << std::endl;
+        std::cout << "Width: " << width << std::endl;
+        std::cout << "Height: " << height << std::endl;
+        std::cout << "NumSquare: " << num_squares_generated << std::endl;
+      }
   };
 
   FrameGeneratorCapturerVideoTrackSource(Config config,

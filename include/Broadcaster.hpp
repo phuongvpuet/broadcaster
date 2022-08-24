@@ -9,15 +9,13 @@
 #include <mutex>
 #include <string>
 
-class Broadcaster : public
-                    mediasoupclient::SendTransport::Listener,
+class Broadcaster : public mediasoupclient::SendTransport::Listener,
                     mediasoupclient::RecvTransport::Listener,
                     mediasoupclient::Producer::Listener,
                     mediasoupclient::DataProducer::Listener,
                     mediasoupclient::DataConsumer::Listener,
                     mediasoupclient::Consumer::Listener
 {
-public:
 	struct TimerKiller
 	{
 		// returns false if killed:
@@ -39,7 +37,6 @@ public:
 		mutable std::mutex m;
 		bool terminate = false;
 	};
-
 	/* Virtual methods inherited from SendTransport::Listener. */
 public:
 	std::future<void> OnConnect(
@@ -62,7 +59,7 @@ public:
 	/* Virtual methods inherited from Producer::Listener. */
 public:
 	void OnTransportClose(mediasoupclient::Producer* producer) override;
-  void OnTransportClose(mediasoupclient::Consumer* consumer) override;
+	void OnTransportClose(mediasoupclient::Consumer* consumer) override;
 
 	/* Virtual methods inherited from DataConsumer::Listener */
 public:
@@ -96,9 +93,11 @@ public:
 	  bool enableAudio,
 	  bool useSimulcast,
 	  const nlohmann::json& routerRtpCapabilities,
-	  bool verifySsl = true);
+	  webrtc::VideoTrackSourceInterface* videoSource,
+	  bool verifySsl   = true,
+	  std::string name = "Broadcaster");
 	void Stop();
-
+	void SendPing();
 	~Broadcaster();
 
 private:
@@ -107,16 +106,18 @@ private:
 	mediasoupclient::RecvTransport* recvTransport{ nullptr };
 	mediasoupclient::DataProducer* dataProducer{ nullptr };
 	mediasoupclient::DataConsumer* dataConsumer{ nullptr };
-  mediasoupclient::Producer* audioProducer{ nullptr };
-  mediasoupclient::Producer* videoProducer{ nullptr };
-
+	mediasoupclient::Producer* audioProducer{ nullptr };
+	mediasoupclient::Producer* videoProducer{ nullptr };
 
 	std::string id = std::to_string(rtc::CreateRandomId());
 	std::string baseUrl;
-	std::thread sendDataThread;
-
 	struct TimerKiller timerKiller;
-	bool verifySsl = true;
+
+
+	bool verifySsl   = true;
+	bool canSendPing = false;
+	webrtc::VideoTrackSourceInterface* videoSource;
+	std::string name;
 
 	std::future<void> OnConnectSendTransport(const nlohmann::json& dtlsParameters);
 	std::future<void> OnConnectRecvTransport(const nlohmann::json& dtlsParameters);
@@ -124,8 +125,8 @@ private:
 	void CreateSendTransport(bool enableAudio, bool useSimulcast);
 	void CreateRecvTransport();
 	void CreateDataConsumer();
-	void CreateMediaConsumer(mediasoupclient::Consumer::Listener* listener, mediasoupclient::Producer* producer);
-
+	void CreateMediaConsumer(
+	  mediasoupclient::Consumer::Listener* listener, mediasoupclient::Producer* producer);
 };
 
 #endif // STOKER_HPP

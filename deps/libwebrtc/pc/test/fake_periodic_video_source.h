@@ -26,8 +26,8 @@ class FakePeriodicVideoSource final
     : public rtc::VideoSourceInterface<VideoFrame> {
  public:
   static constexpr int kDefaultFrameIntervalMs = 33;
-  static constexpr int kDefaultWidth = 640;
-  static constexpr int kDefaultHeight = 480;
+  static constexpr int kDefaultWidth = 128;
+  static constexpr int kDefaultHeight = 128;
 
   struct Config {
     int width = kDefaultWidth;

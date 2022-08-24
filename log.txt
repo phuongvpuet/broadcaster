@@ -1,0 +1,179 @@
+[DEBUG] mediasoupclient::Initialize() | mediasoupclient v3.4.0
+[INFO] welcome to mediasoup broadcaster app!
+
+Current Time is: Mon Aug 22 13:46:43 2022
+
+Number Client is: 1
+Create List Room Start:
+Run Threads Parallel: 0
+Checking create Room: https://portal-mediasoup-dev.service.zingplay.com:4443/createRoom/zps_1661150803_0
+Room zps_1661150803_0 is created
+Create List Room Done
+Create shared video Source
+[INFO] getting frame generator
+Video Src Config: 
+FPS: 30
+Width: 100
+Height: 100
+NumSquare: 1
+Url Room: https://portal-mediasoup-dev.service.zingplay.com:4443/rooms/zps_1661150803_0
+Creating Thread to Init Client 0
+Establish Client 0
+Found room, client 0 try to join room zps_1661150803_0
+[INFO] Broadcaster::Start()
+[DEBUG] Device::Load() | got receiving SCTP capabilities:
+{
+    "numStreams": {
+        "MIS": 1024,
+        "OS": 1024
+    }
+}
+[DEBUG] Device::Load() | succeeded
+[INFO] creating Broadcaster...
+[INFO] creating mediasoup send WebRtcTransport...
+[INFO] creating SendTransport...
+[DEBUG] Handler::Send() | [kind:audio, track->id():1684004809]
+[INFO] Broadcaster::OnConnect()
+Connect Send Transport
+[WARN] scalabilityMode::parseScalabilityMode() | invalid scalabilityMode: 
+[DEBUG] Handler::Send() | calling pc->SetLocalDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:have-local-offer]
+[DEBUG] PeerConnection::OnIceGatheringChange() | [newState:gathering]
+[DEBUG] PeerConnection::OnIceCandidate() | [candidate:candidate:1558561323 1 udp 2122260223 172.28.58.91 49568 typ host generation 0 ufrag 0qiz network-id 1 network-cost 50]
+[DEBUG] Handler::Send() | calling pc->SetRemoteDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:stable]
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:checking]
+[INFO] Broadcaster::OnProduce()
+[DEBUG] PeerConnection::OnIceGatheringChange() | [newState:complete]
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:connected]
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:completed]
+[INFO] creating video track
+[DEBUG] Handler::Send() | [kind:video, track->id():b91a6a1d-7a91-40da-a8e0-3b1a7d8f7f3b]
+[WARN] scalabilityMode::parseScalabilityMode() | invalid scalabilityMode: 
+[DEBUG] Handler::Send() | calling pc->SetLocalDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:have-local-offer]
+[DEBUG] Handler::Send() | calling pc->SetRemoteDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:stable]
+[INFO] Broadcaster::OnProduce()
+[DEBUG] PeerConnection::CreateDataChannel() | Success creating data channel
+[DEBUG] Handler::SendDataChannel() | calling pc.setLocalDescription() [offer]
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:have-local-offer]
+[DEBUG] Handler::SendDataChannel() | calling pc.setRemoteDescription() [answer]
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:stable]
+[INFO] Broadcaster::OnProduceData()
+[INFO] creating mediasoup recv WebRtcTransport...
+[INFO] creating RecvTransport...
+[DEBUG] PeerConnection::CreateDataChannel() | Success creating data channel
+[DEBUG] Handler::ReceiveDataChannel() | calling pc->setRemoteDescription() [offer:v=0
+o=libmediasoupclient 10000 1 IN IP4 0.0.0.0
+s=-
+t=0 0
+a=ice-lite
+a=fingerprint:sha-384 64:4A:E6:08:EB:4B:02:89:28:46:93:B0:7D:E8:AF:C5:C6:59:03:6B:FF:7E:EE:F3:06:A0:47:E7:1B:B9:43:2C:D5:78:C6:F0:13:7B:F0:38:35:85:7A:19:E3:80:06:E2
+a=msid-semantic: WMS *
+a=group:BUNDLE datachannel
+m=application 7 UDP/DTLS/SCTP webrtc-datachannel
+c=IN IP4 127.0.0.1
+a=setup:actpass
+a=mid:datachannel
+a=ice-ufrag:26lvu9n8igy12n4j7nmcnyox7x7yr0x4
+a=ice-pwd:scbx4bx286c7wdad9x8epk6vpzl09y3u
+a=candidate:udpcandidate 1 udp 1076302079 120.138.72.22 10031 typ host
+a=end-of-candidates
+a=ice-options:renomination
+]
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:have-remote-offer]
+[INFO] Broadcaster::OnConnect()
+Connect Recv Transport
+[DEBUG] Handler::ReceiveDataChannel() | calling pc->setLocalDescription() [answer: v=0
+o=- 9142019585236757084 2 IN IP4 127.0.0.1
+s=-
+t=0 0
+a=group:BUNDLE datachannel
+a=msid-semantic: WMS
+m=application 9 UDP/DTLS/SCTP webrtc-datachannel
+c=IN IP4 0.0.0.0
+a=ice-ufrag:J/qf
+a=ice-pwd:QMuhV0vT7unJ5qNlHm9pGyn3
+a=ice-options:trickle
+a=fingerprint:sha-256 36:9F:C2:7D:55:21:EA:FA:EE:4F:59:DA:D4:49:A8:C5:8E:FC:E0:DD:77:93:0F:C8:AE:2B:DC:AE:CC:C3:16:3B
+a=setup:active
+a=mid:datachannel
+a=sctp-port:5000
+]
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:stable]
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:checking]
+[DEBUG] PeerConnection::OnIceGatheringChange() | [newState:gathering]
+ProduceId--------------------: 80e154dc-2c0c-4894-b68f-b78a9ea38454
+[DEBUG] PeerConnection::OnIceCandidate() | [candidate:candidate:1558561323 1 udp 2122260223 172.28.58.91 57074 typ host generation 0 ufrag J/qf network-id 1 network-cost 50]
+[DEBUG] PeerConnection::OnIceGatheringChange() | [newState:complete]
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:connected]
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:completed]
+[DEBUG] Handler::Receive() | [id:d63edf2d-4f8b-4ecd-946a-f07eb0b40deb, kind:audio]
+[DEBUG] Handler::Receive() | calling pc->setRemoteDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:have-remote-offer]
+[DEBUG] Handler::Receive() | calling pc->SetLocalDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:stable]
+[INFO] Broadcaster::OnBufferedAmountChange()
+ProduceId--------------------: 018b814f-f24e-4063-9722-42c4fde066c3
+[INFO] Broadcaster::OnBufferedAmountChange()
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150805"
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150805"
+[DEBUG] Handler::Receive() | [id:708721ac-1757-4b1b-bc0d-2d8981dd5901, kind:video]
+[DEBUG] Handler::Receive() | calling pc->setRemoteDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:have-remote-offer]
+[DEBUG] Handler::Receive() | calling pc->SetLocalDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:stable]
+[DEBUG] Handler::Receive() | [id:probator, kind:video]
+[DEBUG] Handler::Receive() | calling pc->setRemoteDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:have-remote-offer]
+[DEBUG] Handler::Receive() | calling pc->SetLocalDescription():
+
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:stable]
+[DEBUG] Transport::Consume() | Consumer for RTP probation created
+[INFO] Broadcaster::OnBufferedAmountChange()
+[INFO] Broadcaster::OnBufferedAmountChange()
+Created Client 0
+[INFO] press Ctrl+C or Cmd+C to leave...(Wait for fully finished create client)
+Size Broadcaster: 1
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150805"
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150805"
+[INFO] Broadcaster::OnBufferedAmountChange()
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150815"
+[INFO] Broadcaster::OnBufferedAmountChange()
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150815"
+[INFO] Broadcaster::OnBufferedAmountChange()
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150825"
+[INFO] Broadcaster::OnBufferedAmountChange()
+[INFO] Broadcaster::OnMessage(): chat
+[INFO] Broadcaser_0 received chat data: Broadcaser_0 said me: "Broadcaser_0_1661150825"
+Broadcaser_0 Stop() 
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:closed]
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:closed]
+[INFO] Broadcaster::Consumer::OnTransportClose()
+[INFO] Broadcaster::Consumer::OnTransportClose()
+[INFO] Broadcaster::OnConnectionStateChange() [connectionState:closed]
+[DEBUG] PeerConnection::OnSignalingChange() | [newState:closed]
+[INFO] Broadcaster::OnClose()
+[INFO] Broadcaster::Producer::OnTransportClose()
+[INFO] Broadcaster::Producer::OnTransportClose()
+[INFO] Broadcaster::OnTransportClose()
+Broadcaser_0 Stop() 
+[INFO] interrupt signal (2) received
+[INFO] leaving!

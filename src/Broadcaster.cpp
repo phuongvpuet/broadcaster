@@ -45,12 +45,12 @@ std::future<void> Broadcaster::OnConnect(mediasoupclient::Transport* transport, 
 
 	if (transport->GetId() == this->sendTransport->GetId())
 	{
-    std::cout << "Connect Send Transport" << std::endl;
+		std::cout << "Connect Send Transport" << std::endl;
 		return this->OnConnectSendTransport(dtlsParameters);
 	}
 	else if (transport->GetId() == this->recvTransport->GetId())
 	{
-    std::cout << "Connect Recv Transport" << std::endl;
+		std::cout << "Connect Recv Transport" << std::endl;
 		return this->OnConnectRecvTransport(dtlsParameters);
 	}
 	else
@@ -143,7 +143,7 @@ void Broadcaster::OnConnectionStateChange(
 	if (connectionState == "failed")
 	{
 		Stop();
-		std::exit(0);
+		// std::exit(0);
 	}
 }
 
@@ -193,7 +193,7 @@ std::future<std::string> Broadcaster::OnProduce(
 	}
 	else
 	{
-		std::cerr << "[ERROR] unable to create producer"
+		std::cerr << "[ERROR] unable to create producer" << this->name
 		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
 
 		promise.set_exception(std::make_exception_ptr(r.text));
@@ -254,8 +254,7 @@ std::future<std::string> Broadcaster::OnProduceData(
 	}
 	else
 	{
-		std::cerr << "[ERROR] unable to create data producer"
-		          << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
+		std::cerr << "[ERROR] unable to create data producer" << this->name << " [status code:" << r.status_code << ", body:\"" << r.text << "\"]" << std::endl;
 
 		promise.set_exception(std::make_exception_ptr(r.text));
 	}
@@ -268,12 +267,16 @@ void Broadcaster::Start(
   bool enableAudio,
   bool useSimulcast,
   const json& routerRtpCapabilities,
-  bool verifySsl)
+  webrtc::VideoTrackSourceInterface* videoSource,
+  bool verifySsl,
+  std::string name)
 {
 	std::cout << "[INFO] Broadcaster::Start()" << std::endl;
 
 	this->baseUrl   = baseUrl;
 	this->verifySsl = verifySsl;
+	this->name      = name;
+	this->videoSource = videoSource;
 
 	// Load the device.
 	this->device.Load(routerRtpCapabilities);
@@ -284,7 +287,7 @@ void Broadcaster::Start(
 	json body =
 	{
 		{ "id",          this->id          },
-		{ "displayName", "Phuong Broadcaster"     },
+		{ "displayName", name     },
 		{ "device",
 			{
 				{ "name",    "libmediasoupclient"       },
@@ -358,20 +361,21 @@ void Broadcaster::CreateDataConsumer()
 	this->dataConsumer = this->recvTransport->ConsumeData(
 	  this, dataConsumerId, dataProducerId, streamId, "chat", "", nlohmann::json());
 
-  //
-  // this->recvTransport->Consume(this, dataConsumerId, dataProducerId)
+	//
+	// this->recvTransport->Consume(this, dataConsumerId, dataProducerId)
 }
 
-void Broadcaster::CreateMediaConsumer(mediasoupclient::Consumer::Listener* listener, mediasoupclient::Producer* producer)
+void Broadcaster::CreateMediaConsumer(
+  mediasoupclient::Consumer::Listener* listener, mediasoupclient::Producer* producer)
 {
 	const std::string& producerId = producer->GetId();
 	/* clang-format on */
 	// create server data consumer
-  std::cout<< "ProduceId--------------------: " << producerId << std::endl;
+	std::cout << "ProduceId--------------------: " << producerId << std::endl;
 	auto r = cpr::PostAsync(
 	           cpr::Url{ this->baseUrl + "/broadcasters/" + this->id + "/transports/" +
 	                     this->recvTransport->GetId() + "/consume" },
-             cpr::Parameters{{"producerId", producerId}},
+	           cpr::Parameters{ { "producerId", producerId } },
 	           cpr::VerifySsl{ verifySsl })
 	           .get();
 	if (r.status_code != 200)
@@ -382,38 +386,44 @@ void Broadcaster::CreateMediaConsumer(mediasoupclient::Consumer::Listener* liste
 	}
 
 	auto response = json::parse(r.text);
-  // std::cout << "Consume Media From Server: " << r.text << std::endl;
-  if (response.find("id") == response.end())
+	// std::cout << "Consume Media From Server: " << r.text << std::endl;
+	if (response.find("id") == response.end())
 	{
 		std::cerr << "[ERROR] 'id' missing in response" << std::endl;
 
 		return;
 	}
-  if (response.find("producerId") == response.end())
+	if (response.find("producerId") == response.end())
 	{
 		std::cerr << "[ERROR] 'producerId' missing in response" << std::endl;
 
 		return;
 	}
-  if (response.find("kind") == response.end())
+	if (response.find("kind") == response.end())
 	{
 		std::cerr << "[ERROR] 'kind' missing in response" << std::endl;
 
 		return;
 	}
-  if (response.find("rtpParameters") == response.end())
+	if (response.find("rtpParameters") == response.end())
 	{
 		std::cerr << "[ERROR] 'rtpParameters' missing in response" << std::endl;
 
 		return;
 	}
-  mediasoupclient::Consumer* consumer = this->recvTransport->Consume(
-    listener,
-    response["id"],
-    response["producerId"],
-    response["kind"],
-    &response["rtpParameters"]);
-
+	mediasoupclient::Consumer* consumer = this->recvTransport->Consume(
+	  listener, response["id"], response["producerId"], response["kind"], &response["rtpParameters"]);
+	this->canSendPing        = true;
+	SendPing();
+	uint32_t intervalSeconds = 10;
+	std::thread([this, intervalSeconds]() {
+		bool run = true;
+		while (run)
+		{
+			SendPing();
+			run = timerKiller.WaitFor(std::chrono::seconds(intervalSeconds));
+		}
+	}).detach();
 }
 
 void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast)
@@ -503,7 +513,8 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast)
 		};
 		/* clang-format on */
 
-		this->audioProducer = this->sendTransport->Produce(this, audioTrack, nullptr, &codecOptions, nullptr);
+		this->audioProducer =
+		  this->sendTransport->Produce(this, audioTrack, nullptr, &codecOptions, nullptr);
 	}
 	else
 	{
@@ -514,7 +525,7 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast)
 
 	if (this->device.CanProduce("video"))
 	{
-		auto videoTrack = createSquaresVideoTrack(std::to_string(rtc::CreateRandomId()));
+		auto videoTrack = createSquaresVideoTrackFromSource(this->videoSource);
 
 		if (useSimulcast)
 		{
@@ -523,7 +534,8 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast)
 			encodings.emplace_back(webrtc::RtpEncodingParameters());
 			encodings.emplace_back(webrtc::RtpEncodingParameters());
 
-			this->videoProducer = this->sendTransport->Produce(this, videoTrack, &encodings, nullptr, nullptr);
+			this->videoProducer =
+			  this->sendTransport->Produce(this, videoTrack, &encodings, nullptr, nullptr);
 		}
 		else
 		{
@@ -540,22 +552,31 @@ void Broadcaster::CreateSendTransport(bool enableAudio, bool useSimulcast)
 	///////////////////////// Create Data Producer //////////////////////////
 
 	this->dataProducer = sendTransport->ProduceData(this);
+	// uint32_t intervalSeconds = 10;
+	// std::thread([this, intervalSeconds]() {
+	// 	bool run = true;
+	// 	while (run)
+	// 	{
+	// 		SendPing();
+	// 		run = timerKiller.WaitFor(std::chrono::seconds(intervalSeconds));
+	// 	}
+	// }).detach();
+}
 
-	uint32_t intervalSeconds = 10;
-	std::thread([this, intervalSeconds]() {
-		bool run = true;
-		while (run)
-		{
-			std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
-			std::time_t t                           = std::chrono::system_clock::to_time_t(p);
-			std::string s                           = std::ctime(&t);
-			auto dataBuffer                         = webrtc::DataBuffer(s);
-			std::cout << "[INFO] sending chat data: " << s << std::endl;
-			this->dataProducer->Send(dataBuffer);
-			run = timerKiller.WaitFor(std::chrono::seconds(intervalSeconds));
-		}
-	})
-	  .detach();
+void Broadcaster::SendPing()
+{
+	if (!this->canSendPing)
+	{
+		std::cout << this->name << "Not Enough To Send Ping " << std::endl;
+		return;
+	}
+	std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
+	std::time_t t                           = std::chrono::system_clock::to_time_t(p);
+	std::string s                           = std::to_string(std::time(&t));
+	s                                       = this->name + "_" + s;
+	auto dataBuffer                         = webrtc::DataBuffer(s);
+	// std::cout << "[INFO] sending chat data: " << s << std::endl;
+	this->dataProducer->Send(dataBuffer);
 }
 
 void Broadcaster::CreateRecvTransport()
@@ -636,23 +657,23 @@ void Broadcaster::CreateRecvTransport()
 	  sctpParameters);
 
 	this->CreateDataConsumer();
-  this->CreateMediaConsumer(this, this->audioProducer);
-  this->CreateMediaConsumer(this, this->videoProducer);
+	this->CreateMediaConsumer(this, this->audioProducer);
+	this->CreateMediaConsumer(this, this->videoProducer);
 }
 
 void Broadcaster::OnMessage(mediasoupclient::DataConsumer* dataConsumer, const webrtc::DataBuffer& buffer)
 {
-	std::cout << "[INFO] Broadcaster::OnMessage()[Label]: " << dataConsumer->GetLabel() << std::endl;
+	std::cout << "[INFO] Broadcaster::OnMessage(): " << dataConsumer->GetLabel() << std::endl;
 	if (dataConsumer->GetLabel() == "chat")
 	{
 		std::string s = std::string(buffer.data.data<char>(), buffer.data.size());
-		std::cout << "[INFO] received chat data: " + s << std::endl;
+		std::cout << "[INFO] " + this->name + " received chat data: " + s << std::endl;
 	}
 }
 
 void Broadcaster::Stop()
 {
-	std::cout << "[INFO] Broadcaster::Stop()" << std::endl;
+	std::cout << this->name << " Stop() " << std::endl;
 
 	this->timerKiller.Kill();
 
@@ -685,7 +706,7 @@ void Broadcaster::OnBufferedAmountChange(mediasoupclient::DataProducer* /*dataPr
 }
 nlohmann::json OnGetStats(const mediasoupclient::Consumer* consumer)
 {
-  std::cout << "[INFO] Broadcaster::OnGetStatsssssssssssssssss" << std::endl;
-  json res = {};
-  return res;
+	std::cout << "[INFO] Broadcaster::OnGetStatsssssssssssssssss" << std::endl;
+	json res = {};
+	return res;
 }

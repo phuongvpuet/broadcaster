@@ -1,1 +1,1 @@
-SERVER_URL=https://portal-mediasoup-dev.service.zingplay.com:4443 ROOM_ID=zps build/broadcaster
+SERVER_URL=https://portal-mediasoup-dev.service.zingplay.com:4443 ROOM_ID=zps NUMBER_CLIENT=200 WIDTH_SIZE=128 HEIGHT_SIZE=128 NUMBER_SQUARE=1 RUN_PARALLEL=false VERIFY_SSL=false build/broadcaster

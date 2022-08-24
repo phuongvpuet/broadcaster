@@ -2,4 +2,4 @@
 /utils/node_modules/
 /customLog
 webrtc-src/*
-.vscode/settings.json
+.vscode/*
