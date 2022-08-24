@@ -1,4 +1,4 @@
-Fetch webrtc \
+Fetch webrtc 
 ```bash
 cd webrtc-src \
 fetch --nohooks webrtc \
@@ -7,6 +7,22 @@ cd src \
 git checkout -b m94 refs/remotes/branch-heads/4606 \
 gclient sync \
 ```
+
+Build Webrtc + Mediasoup Mac
+```bash
+cd webrtc-src/src \
+gn gen out/m94 --args='is_debug=false is_component_build=false is_clang=true rtc_include_tests=false rtc_use_h264=true use_rtti=true mac_deployment_target="10.11" use_custom_libcxx=false'
+```
+Build Webrtc + Mediasoup Linux
+```bash
+cd webrtc-src/src \
+gn gen out/m94 --args='is_debug=false is_component_build=false is_clang=false rtc_include_tests=false rtc_use_h264=true use_rtti=true use_custom_libcxx=false treat_warnings_as_errors=false use_ozone=true'
+```
+Then:
+```bash
+ninja -C out/m94
+```
+
 Environment variables:
 
 * `SERVER_URL`: The URL of the mediasoup-demo HTTP API server (required).
