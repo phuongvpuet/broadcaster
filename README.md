@@ -1,10 +1,12 @@
-Fetch webrtc
-  cd webrtc-src \
-  fetch --nohooks webrtc \
-  gclient sync \
-  cd src \
-  git checkout -b m94 refs/remotes/branch-heads/4606 \
-  gclient sync \
+Fetch webrtc \
+```bash
+cd webrtc-src \
+fetch --nohooks webrtc \
+gclient sync \
+cd src \
+git checkout -b m94 refs/remotes/branch-heads/4606 \
+gclient sync \
+```
 Environment variables:
 
 * `SERVER_URL`: The URL of the mediasoup-demo HTTP API server (required).
