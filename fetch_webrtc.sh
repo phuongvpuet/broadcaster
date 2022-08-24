@@ -1,5 +1,4 @@
-mkdir webrtc-checkout
-cd webrtc-checkout
+cd webrtc-src
 fetch --nohooks webrtc
 gclient sync
 cd src
