@@ -1,22 +1,10 @@
-# mediasoup broadcaster demo (libmediasoupclient v3)
-
-[libmediasoupclient][libmediasoupclient] based application that produces artificial sound and video to the specified room in [mediasoup-demo] application. The video consists of some colored rectangles moving towards the lower-right corner of the image. Credit for the artificial media creation goes to the WEBRTC team ([LICENSE](https://webrtc.googlesource.com/src/+/refs/heads/master/LICENSE)).
-
-
-## Resources
-
-* mediasoup website and documentation: [mediasoup.org](https://mediasoup.org)
-* mediasoup support forum: [mediasoup.discourse.group](https://mediasoup.discourse.group)
-
-
-## Usage
-
-Once installed (see **Installation** below):
-
-```bash
-SERVER_URL=https://my.mediasoup-demo.org:4443 ROOM_ID=broadcaster build/broadcaster
-```
-
+Fetch webrtc
+  cd webrtc-src
+  fetch --nohooks webrtc
+  gclient sync
+  cd src
+  git checkout -b m94 refs/remotes/branch-heads/4606
+  gclient sync
 Environment variables:
 
 * `SERVER_URL`: The URL of the mediasoup-demo HTTP API server (required).
@@ -61,15 +49,3 @@ The following error may happen if the linker is not able to find the openssl cry
 -DOPENSSL_ROOT_DIR=/usr/local/Cellar/openssl@1.1/1.1.1h \
 -DOPENSSL_CRYPTO_LIBRARY=/usr/local/Cellar/openssl@1.1/1.1.1h/lib/libcrypto.1.1.dylib
 ```
-
-
-
-## License
-
-Some files contain specific license agreements, written in the beginning of the respective files.
-
-*NOTE 1:* `PATH_TO_OPENSSL_HEADERS` is `/usr/local/opt/openssl/include` if you install OpenSSL using Homebrew in OSX.
-
-[mediasoup-demo]: https://github.com/versatica/mediasoup-demo
-[libmediasoupclient]: https://github.com/versatica/libmediasoupclient
-[cpr]: https://github.com/whoshuu/cpr
